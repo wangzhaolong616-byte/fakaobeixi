@@ -395,6 +395,14 @@ details summary:hover{color:var(--tx2)}
 @media(max-width:1000px){.nl-grid{grid-template-columns:1fr}}
 .nl-grid h5{color:var(--blue2);font-size:11.5px;margin-bottom:4px}
 .nl-grid p{font-size:12.5px;color:var(--tx2);line-height:1.75;margin:0}
+
+/* ---------- 横向溢出兜底 ----------
+ * grid 子项默认 min-width:auto，会被长内容（长英文串、连续标点）撑破父容器，
+ * 在窄屏上表现为整页横向滚动。统一给 grid 子项 min-width:0，
+ * 并允许长串在必要时断行。 */
+.grid>*,.grid-2>*,.grid-3>*,.nl-grid>*,.cmp-grid>*,.case-grid>*{min-width:0}
+#view{overflow-wrap:break-word}
+.nl-grid p,.nl-grid h5,.nl-line,.nl-head,.corr,.tier-body,.facts,.q-stem,.layer p{overflow-wrap:anywhere}
 .fire{font-size:11px;padding:2px 8px;border-radius:5px}
 .fire-h{background:rgba(228,86,74,.16);color:#F08B80;border:1px solid rgba(228,86,74,.4)}
 .fire-m{background:rgba(224,138,60,.16);color:#F0AE6C;border:1px solid rgba(224,138,60,.4)}

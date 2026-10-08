@@ -5,10 +5,21 @@
 # 抓取自第三方站点的原始页面（版权内容，仅作本地解析原料，不进入公开仓库）
 import/*.html
 import/y1/
+import/y2019/
+import/y2020/
+import/y2020e/
+import/y2021/
 import/**/*.html
+import/**/_manifest.json
 
 # 解析中间产物
 import/_raw_*.json
+import/_tmp_*.json
+import/*.bak
+
+# Python 缓存
+__pycache__/
+*.pyc
 
 # 测试脚本产出的截图（每次跑测试会重新生成）
 shot-*.png
