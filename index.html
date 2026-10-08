@@ -2,8 +2,20 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>2026 法考 AI 交互备考系统</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>律灯 · 法考智能备考系统</title>
+<meta name="description" content="律灯 —— 法考智能备考系统。知识图谱、历年真题（回忆版）、命题陷阱库、间隔重复、主观题踩点得分，全部数据可溯源。">
+<meta name="theme-color" content="#0F1218">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="律灯">
+<meta name="format-detection" content="telephone=no">
+<meta property="og:title" content="律灯 · 法考智能备考系统">
+<meta property="og:description" content="知识图谱 · 历年真题（回忆版）· 命题陷阱库 · 间隔重复 · 主观题踩点得分">
+<meta property="og:type" content="website">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="favicon.svg">
 <style>
 :root{
   --bg:#0F1218; --bg2:#161A22; --card:#1A1F29; --card2:#20262F;
@@ -83,7 +95,6 @@ nav{padding:10px 8px;flex:1}
 .top-right{display:flex;gap:10px;align-items:center}
 .pill{font-size:12px;background:rgba(76,123,224,.15);color:var(--blue2);padding:4px 11px;border-radius:20px;border:1px solid rgba(76,123,224,.3)}
 .content{padding:22px 26px 60px;max-width:1500px;width:100%}
-
 /* ---------- 卡片 ---------- */
 .card{
   background:var(--card);border:1px solid var(--line);border-radius:12px;
@@ -497,6 +508,25 @@ textarea:focus{outline:none;border-color:var(--blue)}
   .side,.top,.row-btns,.toast{display:none!important}
   body{background:#fff;color:#000}
   .card{border-color:#ccc;background:#fff}
+}
+
+/* ---------- iPhone 刘海 / 底部横条安全区 ---------- */
+@supports (padding: env(safe-area-inset-bottom)) {
+  .side{padding-top:env(safe-area-inset-top);padding-left:env(safe-area-inset-left)}
+  .top{padding-left:calc(26px + env(safe-area-inset-left));padding-right:calc(26px + env(safe-area-inset-right))}
+  .content{padding-bottom:calc(60px + env(safe-area-inset-bottom));
+           padding-left:calc(26px + env(safe-area-inset-left));
+           padding-right:calc(26px + env(safe-area-inset-right))}
+  @media(max-width:860px){
+    .side{padding-top:env(safe-area-inset-top)}
+    .top{padding-left:calc(14px + env(safe-area-inset-left));padding-right:calc(14px + env(safe-area-inset-right))}
+    .content{padding-left:calc(14px + env(safe-area-inset-left));
+             padding-right:calc(14px + env(safe-area-inset-right))}
+  }
+  @media(max-width:560px){
+    .content{padding-left:calc(10px + env(safe-area-inset-left));
+             padding-right:calc(10px + env(safe-area-inset-right))}
+  }
 }
 </style>
 </head>

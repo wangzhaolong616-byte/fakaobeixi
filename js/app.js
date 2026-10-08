@@ -197,6 +197,7 @@
 
   /* ==================== 骨架 ==================== */
   function renderShell() {
+    saveLastView(route.view);   /* 单一收口：任何路径渲染都记录当前顶层页面 */
     var info = AppState.examInfo();
     var log = AppState.todayLog();
     var done = log.qCount;
@@ -226,7 +227,7 @@
     document.body.innerHTML =
       '<div class="app">' +
         '<aside class="side">' +
-          '<div class="brand"><span class="logo">法</span><div><b>' + (info.track === 'subjective2026' ? '2026' : '2027') + ' 法考 AI 备考系统</b><small>交互式 · 动态更新 · 数据可溯源</small></div></div>' +
+          '<div class="brand"><span class="logo">律</span><div><b>律灯 · 法考备考系统</b><small>' + (info.track === 'subjective2026' ? '2026' : '2027') + ' 考试年度 · 数据可溯源</small></div></div>' +
           '<nav>' + navHtml + '</nav>' +
           '<div class="side-foot">' +
             '<div class="mini">档案创建 ' + esc(AppState.state.createdAt) + '</div>' +
@@ -253,6 +254,10 @@
     var fn = VIEWS[route.view] || VIEWS.dash;
     v.innerHTML = fn(route.arg);
     if (AFTER[route.view]) AFTER[route.view](route.arg);
+    /* 标签页标题随当前页面变化，多标签时一眼可辨 */
+    var navName = '';
+    NAV.some(function (n) { if (n.key === route.view) { navName = n.name; return true; } return false; });
+    document.title = navName ? ('律灯 · ' + navName) : '律灯 · 法考智能备考系统';
     /* 考试模式下启动计时器；离开则停止 */
     if (route.view === 'train' && route.arg && route.arg.indexOf('exam') === 0 && quiz.list.length) startExamTimer();
     else stopExamTimer();
@@ -343,7 +348,7 @@
     return '' +
     '<div class="grid grid-2">' +
       '<div class="card card-hero">' +
-        '<div class="hero-title">法考备考驾驶舱</div>' +
+        '<div class="hero-title">备考驾驶舱</div>' +
         '<div class="hero-sub">' + esc(info.phase) + '　·　' + esc(AppState.todayStr()) + '　·　目标：' +
           (info.track === 'subjective2026' ? '2026 年主观题' : '2027 年考试年度') + '</div>' +
         '<div class="hero-cd">' + heroCd + '</div>' +
@@ -1139,8 +1144,14 @@
       if (a.mastered !== b.mastered) return a.mastered ? 1 : -1;
       return (a.nextDue || '').localeCompare(b.nextDue || '');
     });
-    if (!ws.length) return '<div class="card"><h3>错题本</h3><div class="muted">还没有错题。做错的题会自动进入这里，并按间隔重复安排复习。</div>' +
-      '<div class="row-btns"><a class="btn" href="#/train">开始做题</a></div></div>';
+    if (!ws.length) return '<div class="card"><h3>错题本</h3>' +
+      '<div class="muted">还没有错题。做错的题会自动进入这里，并按间隔重复（1 / 3 / 7 / 14 / 30 天）安排复习。</div>' +
+      '<div class="note">做错的题不只是「记下来」——系统会要求你标注错因（知识不会 / 概念混淆 / 审题错误 / 新旧法混淆 …），' +
+      '再按遗忘曲线安排重做。同一考点错两次以上，会自动进入「薄弱雷达」的优先队列。</div>' +
+      '<div class="row-btns">' +
+        '<a class="btn" href="#/train">开始做题</a>' +
+        '<a class="btn btn-ghost" href="#/trap">先看看命题陷阱库</a>' +
+      '</div></div>';
 
     var t = AppState.todayStr();
     var rows = ws.map(function (w) {
@@ -2394,12 +2405,38 @@
   });
 
   /* ==================== 启动 ==================== */
+  /* 记住上次停留的页面：下次打开直接回到那里（只记顶层页面，不记具体题目） */
+  var LAST_KEY = 'fakao2026.lastView';
+  var TOP_VIEWS = ['dash', 'tree', 'compare', 'train', 'exam', 'wrong', 'trap',
+                   'statute', 'newlaw', 'subj', 'data', 'search', 'coach', 'settings'];
+  function saveLastView(view) {
+    try {
+      if (view && TOP_VIEWS.indexOf(view) > -1 && view !== 'diag') {
+        localStorage.setItem(LAST_KEY, view);
+      }
+    } catch (e) { /* 隐私模式下 localStorage 可能不可用，忽略 */ }
+  }
+  function readLastView() {
+    try {
+      var v = localStorage.getItem(LAST_KEY);
+      return (v && TOP_VIEWS.indexOf(v) > -1) ? v : null;
+    } catch (e) { return null; }
+  }
+
   function boot() {
     AppState.load();
-    parseHash();
-    if (!AppState.state.profile.diagDone && (!location.hash || location.hash === '#/' || location.hash === '#/dash')) {
+    var bare = !location.hash || location.hash === '#/' || location.hash === '#/dash';
+    if (bare && !AppState.state.profile.diagDone) {
+      /* 首次使用：先做入学诊断 */
       route.view = 'diag';
       location.hash = '#/diag';
+      parseHash();
+    } else if (bare) {
+      /* 回访：回到上次停留的页面 */
+      var last = readLastView();
+      if (last && last !== 'dash') { location.hash = '#/' + last; parseHash(); }
+      else parseHash();
+    } else {
       parseHash();
     }
     renderShell();
@@ -2407,7 +2444,7 @@
 
   window.addEventListener('hashchange', function () {
     parseHash();
-    renderShell();
+    renderShell();          /* renderShell 内部会记录上次页面 */
     window.scrollTo(0, 0);
   });
 
