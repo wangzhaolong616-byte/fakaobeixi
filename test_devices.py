@@ -4,7 +4,7 @@ import sys
 from playwright.sync_api import sync_playwright
 
 URL = sys.argv[1] if len(sys.argv) > 1 else \
-    'https://727f625e3d3b4474a694869bb5bddc00.sg.agentos-app.run/'
+    'https://05df5faa4d6b48288298ee7f52032fd7.sg.agentos-app.run/'
 
 # 设备视口 + UA
 DEVICES = [
